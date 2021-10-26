@@ -6,41 +6,61 @@ The focus of this presentation is the Render phase of the Event Loop in particul
 
 ![Image](https://i.stack.imgur.com/E4wh6.gif)
 
-JavaScript is single-threaded, meaning that there is only one call-stack and heap, which are not basically "part of the JS itself", but of the Engine that executes the code, like V8, Rhino, SpiderMonkey, etc. Having a single-thread would be cumbersome if there wasn't the idea of asynchronous programming. 
+JavaScript is **single-threaded**, meaning that there is only one call-stack and heap, which are not basically "part of the JS itself", but of the Engine that executes the code, like V8, Rhino, SpiderMonkey, etc. Having a single-thread would be cumbersome if there wasn't the idea of asynchronous programming. 
 
-There are APIs in the browser that have been used by almost any JavaScript developer out there (e.g. “setTimeout”). Those APIs, however, are not provided by the Engine, but are provided by the browser. 
+There are APIs in the browser (e.g. “setTimeout”). Those APIs, however, are not provided by the Engine, but are provided by the browser. 
 
+And here is where the role of the Event Loop comes in. 
 
-##
+### Callback Queue and Job Queue
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Callback queue is the well known one, where the asynchronous code gets pushed to, and waits for the execution.
+
+Apart from the Callback queue browsers have introduced one more queue which is “Job Queue”, reserved only for new Promise() functionality. So when we use promises in our code, we add .then() method, which is a callback method. These `thenable` methods are added to Job Queue once the promise has returned/resolved, and then gets executed. 
 
 ```markdown
-Syntax highlighted code block
+console.log('Message no. 1: Sync');
+setTimeout(function() {
+   console.log('Message no. 2: setTimeout');
+}, 0);
+var promise = new Promise(function(resolve, reject) {
+   resolve();
+});
+promise.then(function(resolve) {
+   console.log('Message no. 3: 1st Promise');
+})
+.then(function(resolve) {
+   console.log('Message no. 4: 2nd Promise');
+});
+console.log('Message no. 5: Sync');
+```
+So here we have both a setTimeout and promises, what will be the result of running this snippet?
 
-# Header 1
-## Header 2
-### Header 3
+It will be the following:
 
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```
+// Message no. 1: Sync
+// Message no. 5: Sync
+// Message no. 3: 1st Promise
+// Message no. 4: 2nd Promise
+// Message no. 2: setTimeout
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+**Why?:** Job Queue has high priority in executing callbacks, if event loop tick comes to Job Queue, it will execute all the jobs in job queue first until it gets empty, then will move to callback queue.
 
-### Jekyll Themes
+The Event loop is, of course, not as simple as we imagine it. 
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/maryprtavian/event-loop-render-queue/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+A more accurate illustartion for it would be the following. 
 
-### Support or Contact
+![Image](https://hsto.org/r/w1560/webt/l0/z9/q2/l0z9q2s-zdltplomxlim269pu7k.png)
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+The logic behind it is very simple. 
 
-### Sources used
+We have some tasks, "orders" from ourselves defined in our code and the highest priority is given to those. 
+Only after them come the "orders" from other "cliets", i.e. the APIs. 
+Here we have three types of "clients" and therefore three types of tasks: Render, Microtasks и Tasks.
+
+
+
+
+## Render Queue
