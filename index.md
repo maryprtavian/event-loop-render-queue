@@ -1,10 +1,17 @@
-## Welcome to GitHub Pages
+# Event Loop. Render Queue 
 
-You can use the [editor on GitHub](https://github.com/maryprtavian/event-loop-render-queue/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+The focus of this presentation is the Render phase of the Event Loop in particular. But at first we will go over some general information about the Event Loop and its related concepts.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Event Loop. The Basics. Well Known Facts and Concepts
 
-### Markdown
+![Image](https://i.stack.imgur.com/E4wh6.gif)
+
+JavaScript is single-threaded, meaning that there is only one call-stack and heap, which are not basically "part of the JS itself", but of the Engine that executes the code, like V8, Rhino, SpiderMonkey, etc. Having a single-thread would be cumbersome if there wasn't the idea of asynchronous programming. 
+
+There are APIs in the browser that have been used by almost any JavaScript developer out there (e.g. “setTimeout”). Those APIs, however, are not provided by the Engine, but are provided by the browser. 
+
+
+##
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
@@ -35,3 +42,5 @@ Your Pages site will use the layout and styles from the Jekyll theme you have se
 ### Support or Contact
 
 Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+
+### Sources used
