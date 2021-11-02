@@ -136,4 +136,31 @@ And now let's see the difference of the above mentioned queues.
 
 ## RequestAnimationFrame
 
+before getting the requestAnimationFrame, we would use the setTimeout and setInterval instead, like this. 
 
+``` markdown
+const performAnimation = () => {
+  //...
+  setTimeout(performAnimation, 1000 / 60)
+}
+setTimeout(performAnimation, 1000 / 60)
+```
+
+``` markdown
+const performAnimation = () => {
+  //...
+}
+setInterval(performAnimation, 1000 / 60)
+```
+The 1000 / 60 interval between the performAnimation() calls is determined by the monitor refresh rate, which is in most of the cases 60 Hz (60 repaints per second), because it’s useless to perform a repaint if the monitor cannot show it due to its limitations. It leads to ~16.6ms of time we have at our disposal to display every single frame.
+
+The problem with this approach is that even though we specify this precision accurately, the browser might be busy performing other operations, and our setTimeout calls might not make it in time for the repaint, and it’s going to be delayed to the next cycle.
+
+This is bad because we lose one frame, and in the next the animation is performed 2 times, causing the eye to notice the clunky animation.
+
+Optimization
+requestAnimationFrame() since its introduction was very CPU friendly, causing animations to stop if the current window or tab is not visible.
+
+At the time requestAnimationFrame() was introduced, setTimeout/setInterval did run even if the tab was hidden, but now since this approach proved to be successful also to battery savings, browsers also implemented throttling for those events, allowing max 1 execution per each second.
+
+Using requestAnimationFrame the browser can further optimize the resource consumption and make the animations smoother.
