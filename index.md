@@ -60,7 +60,76 @@ We have some tasks, "orders" from ourselves defined in our code and the highest 
 Only after them come the "orders" from other "cliets", i.e. the APIs. 
 Here we have three types of "clients" and therefore three types of tasks: Render, Microtasks и Tasks.
 
+![Image](https://hsto.org/r/w1560/webt/l0/z9/q2/l0z9q2s-zdltplomxlim269pu7k.png)
 
+
+
+``` markdown
+const stop = Date.now() + 1000;
+
+// Schedule a (macro)task
+function sT() {
+  if (Date.now() >= stop) {
+    return;
+  }
+  console.log(Date.now()/100 + ": (macro)task");
+  setInterval(sT, 0);
+}
+sT();
+
+// Schedule animation frame callback
+function rAF() {
+  if (Date.now() >= stop) {
+    return;
+  }
+  console.log(Date.now()/100 + ": requestAnimationFrame");
+  requestAnimationFrame(rAF);
+}
+rAF();
+
+Promise.resolve().then(() => {
+  console.log(Date.now()/100 + ": microtask");
+});
+```
+
+Let's run and see the result of this coe snippet. 
+
+``` markdown
+const stop = Date.now() + 1000;
+
+// Schedule a (macro)task
+function sT() {
+  if (Date.now() >= stop) {
+    return;
+  }
+  console.log(Date.now()/100 + ": (macro)task");
+  setInterval(sT, 0);
+}
+sT();
+
+// Schedule animation frame callback
+function rAF() {
+  if (Date.now() >= stop) {
+    return;
+  }
+  console.log(Date.now()/100 + ": requestAnimationFrame");
+  requestAnimationFrame(rAF);
+}
+rAF();
+
+function prom() {
+    if (Date.now() >= stop) {
+        return;
+    }
+    console.log(Date.now()/100 + ": microtask");
+    Promise.resolve().then(prom);
+}
+prom();
+```
+
+And now let's see the difference of the above mentioned queues.
 
 
 ## Render Queue
+
+## RequestAnimationFrame
